@@ -26,7 +26,7 @@ class Note(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     categories = db.relationship('Category', secondary='note_categories', back_populates='notes')
 
@@ -39,6 +39,8 @@ class Category(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
 
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
     notes = db.relationship('Note', secondary='note_categories', back_populates='categories')
 
 
@@ -50,5 +52,5 @@ class NoteCategory(db.Model, SerializerMixin):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     note_id = db.Column(db.Integer, db.ForeignKey('notes.id'))
 
-    category = db.relationship('Category', backref=db.backref('note_categories'))
-    note = db.relationship('Note', backref=db.backref('note_categories'))
+    category = db.relationship('Category', back_populates=('note_categories'))
+    note = db.relationship('Note', back_populates=('note_categories'))
