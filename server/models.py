@@ -1,8 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_serializer import SerializerMixin
 
 db = SQLAlchemy()
 
-class User(db.Model):
+class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -10,8 +11,12 @@ class User(db.Model):
     username = db.Column(db.String, unique=True)
     _password_hash = db.Column(db.String, nullable=False)
 
+    notes = db.relationship('Note', backref='user')
+    categories = db.relationship('Category', backref='user')
 
-class Note(db.Model):
+    serialize_rules = ('-notes.user',)
+
+class Note(db.Model, SerializerMixin):
     __tablename__ = 'notes'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -23,18 +28,27 @@ class Note(db.Model):
 
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+    categories = db.relationship('Category', secondary='note_categories', back_populates='notes')
 
-class Category(db.Model):
+    serialize_rules = ('user.notes',)
+
+
+class Category(db.Model, SerializerMixin):
     __tablename__ = 'categories'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
 
+    notes = db.relationship('Note', secondary='note_categories', back_populates='categories')
 
-class NoteCategory(db.Model):
+
+class NoteCategory(db.Model, SerializerMixin):
     __tablename__ = 'note_categories'
 
     id = db.Column(db.Integer, primary_key=True)
 
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     note_id = db.Column(db.Integer, db.ForeignKey('notes.id'))
+
+    category = db.relationship('Category', backref=db.backref('note_categories'))
+    note = db.relationship('Note', backref=db.backref('note_categories'))
