@@ -1,9 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy.ext.hybrid import hybrid_property
+from setup import bcrypt, db
 
-db = SQLAlchemy()
-
-class User(db.Model, SerializerMixin):
+class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -11,22 +9,25 @@ class User(db.Model, SerializerMixin):
     username = db.Column(db.String, unique=True)
     _password_hash = db.Column(db.String, nullable=False)
 
-    notes = db.relationship('Note', backref='user', cascade='all, delete-orphan')
-    categories = db.relationship('Category', backref='user', cascade='all, delete-orphan')
+    @hybrid_property
+    def password_hash(self):
+        return {"message":"You can't view password hashes"}
 
-    serialize_rules = ('-notes.user',)
+    @password_hash.setter
+    def password_hash(self,password):
+        our_hash = bcrypt.generate_password_hash(password.encode('utf-8'))
+        self._password_hash = our_hash.decode('utf-8')
+        # return(our_hash.decode('utf-8'))
 
-class NoteCategory(db.Model, SerializerMixin):
-    __tablename__ = 'note_categories'
+    def validatepassword(self,password):
+        is_valid = bcrypt.check_password_hash(self._password_hash,password.encode('utf-8'))
+        return is_valid
 
-    id = db.Column(db.Integer, primary_key=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-    note_id = db.Column(db.Integer, db.ForeignKey('notes.id'))
+    notes = db.relationship('Note', backref='user')
+    categories = db.relationship('Category', backref='user')
 
-    category = db.relationship('Category', backref='note_categories')
-    note = db.relationship('Note', backref='note_categories')
 
-class Category(db.Model, SerializerMixin):
+class Category(db.Model):
     __tablename__ = 'categories'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -34,9 +35,9 @@ class Category(db.Model, SerializerMixin):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    notes = db.relationship('Note', secondary='note_categories', back_populates='categories')
+    notes = db.relationship('Note', secondary='note_categories', back_populates='categories', viewonly=True)
 
-class Note(db.Model, SerializerMixin):
+class Note(db.Model):
     __tablename__ = 'notes'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -48,4 +49,15 @@ class Note(db.Model, SerializerMixin):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    categories = db.relationship('Category', secondary='note_categories', back_populates='notes')
+    categories = db.relationship('Category', secondary='note_categories', back_populates='notes', viewonly=True)
+
+class NoteCategory(db.Model):
+    __tablename__ = 'note_categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    note_id = db.Column(db.Integer, db.ForeignKey('notes.id'))
+
+    category = db.relationship('Category', backref='note_categories')
+    note = db.relationship('Note', backref='note_categories')
