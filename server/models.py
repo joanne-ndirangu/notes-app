@@ -11,10 +11,30 @@ class User(db.Model, SerializerMixin):
     username = db.Column(db.String, unique=True)
     _password_hash = db.Column(db.String, nullable=False)
 
-    notes = db.relationship('Note', backref='user')
-    categories = db.relationship('Category', backref='user')
+    notes = db.relationship('Note', backref='user', cascade='all, delete-orphan')
+    categories = db.relationship('Category', backref='user', cascade='all, delete-orphan')
 
     serialize_rules = ('-notes.user',)
+
+class NoteCategory(db.Model, SerializerMixin):
+    __tablename__ = 'note_categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    note_id = db.Column(db.Integer, db.ForeignKey('notes.id'))
+
+    category = db.relationship('Category', backref='note_categories')
+    note = db.relationship('Note', backref='note_categories')
+
+class Category(db.Model, SerializerMixin):
+    __tablename__ = 'categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    notes = db.relationship('Note', secondary='note_categories', back_populates='categories')
 
 class Note(db.Model, SerializerMixin):
     __tablename__ = 'notes'
@@ -29,28 +49,3 @@ class Note(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     categories = db.relationship('Category', secondary='note_categories', back_populates='notes')
-
-    serialize_rules = ('user.notes',)
-
-
-class Category(db.Model, SerializerMixin):
-    __tablename__ = 'categories'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
-    notes = db.relationship('Note', secondary='note_categories', back_populates='categories')
-
-
-class NoteCategory(db.Model, SerializerMixin):
-    __tablename__ = 'note_categories'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-    note_id = db.Column(db.Integer, db.ForeignKey('notes.id'))
-
-    category = db.relationship('Category', back_populates=('note_categories'))
-    note = db.relationship('Note', back_populates=('note_categories'))
