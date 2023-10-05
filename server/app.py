@@ -1,19 +1,16 @@
-from flask import Flask, make_response, jsonify, request, session
-from setup import app, db
+from flask import make_response, jsonify, request, session
+from setup import db, app
 from models import User, Note, Category, NoteCategory
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 @app.route('/signup', methods=['POST'])
 def sign_up():
     if request.method == 'POST':
         userData = request.get_json()
         username = userData['username']
+        email = userData['email']
         password = userData['password']
 
-        new_user = User(username=username, password_hash=password)
+        new_user = User(username=username, email=email, password_hash=password)
 
         db.session.add(new_user)
         db.session.commit()
@@ -81,12 +78,12 @@ def getnotes():
 
     return response
 
-@app.route('/notes/<int:id>', methods = ["GET", "DELETE", "POST", ""])
+@app.route('/notes/<int:id>', methods = ["GET", "DELETE", "POST", "PATCH"])
 def getnote(id):
     ournote = Note.query.filter_by(id=id).first()
 
-    if ournote is None:
-        return jsonify({"error": "Note not found"}), 404
+    # if ournote is None:
+    #     return jsonify({"error": "Note not found"}), 404
 
     if request.method == 'GET':
         noteobj = {
@@ -120,30 +117,46 @@ def getnote(id):
 
         return response
 
+    # if request.method == 'POST':
+    #     noteData = request.get_json()
+    #     title = noteData['title']
+    #     category = noteData['category']
+    #     content = noteData['content']
+
+    #     new_note = User(title=title, content=content,category=category )
+
+    #     db.session.add(new_note)
+    #     db.session.commit()
+
+    #     return jsonify({"message": "New note created successfully"}), 201
+
     elif request.method == 'POST':
-        data = request.get_json()
-        note_id = data['note_id']
-        category_id = data['category_id']
+        title = request.form.get("title")
+        category = request.form.get("category")
+        content = request.form.get("content")
 
-        note_category.note_id = note_id
-        note_category.category_id = category_id
+    print("Received form data:")
+    print("Title:", title)
+    print("Category:", category)
+    print("Content:", content)
 
-        db.session.commit()
+    new_note = Note(
+        title=title,
+        category=category,
+        content=content,
+    )
 
-        note = Note.query.get(note_category.note_id)
+    db.session.add(new_note)
+    db.session.commit()
 
-        return make_response(
-            jsonify({
-                "id": note.id,
-                "title" : note.title,
-                "category" : note.category,
-                "content" : note.content,
-                "created_at" : note.created_at,
-                "updated_at" : note.updated_at,
-                # "categories": [category.name for category in note.category]
-                }),
-            200
-        )
+    note_dict = new_note.to_dict()
+
+    response = make_response(
+        jsonify(note_dict),
+        201
+    )
+
+    return response
 
 
 @app.route('/categories')

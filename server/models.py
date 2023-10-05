@@ -49,6 +49,16 @@ class Note(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "category": self.category,
+            "content": self.content,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
+        }
+
     categories = db.relationship('Category', secondary='note_categories', back_populates='notes', viewonly=True)
 
 class NoteCategory(db.Model):
