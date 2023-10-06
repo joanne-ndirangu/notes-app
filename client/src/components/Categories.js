@@ -2,54 +2,47 @@ import React, { useEffect, useState } from 'react';
 
 function Categories() {
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [notes, setNotes] = useState([]);
 
-  useEffect(() => {
-    // Fetch the list of categories from your API and set it in the 'categories' state.
-    fetch('http://127.0.0.1:5000/categories')
-      .then((response) => response.json())
-      .then((data) => setCategories(data))
-      .catch((error) => console.error('Error fetching categories:', error));
-  }, []);
+  // Fetch categories and notes and update state
+useEffect(() => {
+  fetch('http://localhost:5000/categories')
+    .then((response) => response.json())
+    .then((data) => setCategories(data));
 
-  useEffect(() => {
-      fetch(`http://127.0.0.1:5000/notes{category.id}`)
-        .then((response) => response.json())
-        .then((data) => setNotes(data))
-        .catch((error) => console.error('Error fetching notes:', error));
-    }, [])
+  fetch('http://localhost:5000/notes')
+    .then((response) => response.json())
+    .then((data) => setNotes(data));
+}, [])
 
-  const handleCategoryClick = (category) => {
-    setSelectedCategory(category);
-  };
-
-  return (
-    <>
-    <div>
-      <h1>Categories</h1>
-      <div className="card-container"></div>
-        {categories.map((category) => (
-          <div className="card" key={category.id}>
-            <button onClick={() => handleCategoryClick(category)}>
-              {category.name}
-            </button>
-          </div>
-        ))}
-
-      {selectedCategory && (
-        <div>
-          <h2>Notes in {selectedCategory.name}</h2>
-          <ul>
-            {notes.map((note) => (
-              <li key={note.id}>{note.title}</li>
-            ))}
-          </ul>
+return (
+  <>
+    <h1>Categories</h1>
+      <div className='card-container'>
+      {categories.map((category) => (
+        <div className='card'>
+        <div key={category.id}>{category.name}</div>
         </div>
-      )}
+      ))}
+      </div>
+
+    <h1>Notes</h1>
+    <div className='card-container'>
+      {notes.map((note) => (
+        <div className='card'>
+        <div key={note.id}>
+          {note.title} - <strong>{note.category}</strong>
+          {/* <p>{note.content}</p> */}
+          {note.categories && note.categories.length > 0 && (
+            <p>Categories: {note.categories.join(', ')}</p>
+            )}
+        </div>
+        </div>
+      ))}
     </div>
-    </>
-  );
+  </>
+);
+
 }
 
-export default Categories;
+export default Categories

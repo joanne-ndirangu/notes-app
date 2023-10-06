@@ -1,5 +1,5 @@
 from flask import make_response, jsonify, request, session
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, or_
 from setup import db, app
 from models import User, Note, Category, NoteCategory
 
@@ -11,28 +11,20 @@ def sign_up():
         email = userData['email']
         password = userData['password']
 
-        new_user = User(username=username, email=email, password_hash=password)
+        # Check if a user with the same username or email already exists
+        existing_user = User.query.filter(
+            or_(User.username == username, User.email == email)
+        ).first()
 
-        db.session.add(new_user)
-        db.session.commit()
-        session['random_user'] = new_user.id
-
-        return jsonify({"message": "New User created successfully"}), 201
-
-@app.route('/login', methods=['POST'])
-def login():
-    if request.method == 'POST':
-        login_data = request.get_json()
-        username = login_data.get('username')
-        password = login_data.get('password')
-
-        user = User.query.filter_by(username=username).first()
-
-        if user and user.validatepassword(password):
-            session['user_id'] = user.id
-            return jsonify({"message": "Login successful"}), 200
+        if existing_user:
+            return jsonify({"message": "User already exists"}), 409  # HTTP 409 Conflict
         else:
-            return jsonify({"message": "Invalid username or password"}), 401
+            new_user = User(username=username, email=email, password_hash=password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['random_user'] = new_user.id
+
+            return jsonify({"message": "New User created successfully"}), 201
 
 @app.route('/')
 def home():
@@ -156,13 +148,14 @@ def getnote(id):
             response = jsonify({"error": "Note not found"}), 404
 
         return response
-
     elif request.method == 'POST':
-        title = request.form.get("title")
-        category = request.form.get("category")
-        content = request.form.get("content")
+        note_data = request.get_json()
 
-    print("Received form data:")
+    title = note_data.get("title")
+    category = note_data.get("category")
+    content = note_data.get("content")
+
+    print("Received JSON data:")
     print("Title:", title)
     print("Category:", category)
     print("Content:", content)
@@ -184,7 +177,6 @@ def getnote(id):
     )
 
     return response
-
 
 
 @app.route('/categories')

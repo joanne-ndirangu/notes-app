@@ -40,7 +40,7 @@ function LogIn() {
       .catch((error) => {
         setError(error.message);
       });
-      navigate("/home")
+      navigate("/notes")
   };
 
   return (

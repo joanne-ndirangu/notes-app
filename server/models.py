@@ -8,20 +8,18 @@ class User(db.Model):
     email = db.Column(db.String)
     username = db.Column(db.String, unique=True)
     _password_hash = db.Column(db.String, nullable=False)
-
+    
     @hybrid_property
     def password_hash(self):
-        return {"message":"You can't view password hashes"}
+        return {"message": "You can't view password hashes"}
 
     @password_hash.setter
-    def password_hash(self,password):
+    def password_hash(self, password):
         our_hash = bcrypt.generate_password_hash(password.encode('utf-8'))
         self._password_hash = our_hash.decode('utf-8')
-        # return(our_hash.decode('utf-8'))
 
-    def validatepassword(self,password):
-        is_valid = bcrypt.check_password_hash(self._password_hash,password.encode('utf-8'))
-        return is_valid
+    def validatepassword(self, password):
+        return bcrypt.check_password_hash(self._password_hash, password)
 
     notes = db.relationship('Note', backref='user')
     categories = db.relationship('Category', backref='user')

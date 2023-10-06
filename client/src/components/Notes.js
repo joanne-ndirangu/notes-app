@@ -42,51 +42,54 @@ const handleDelete = (noteId) => {
 
 const handleSaveEdit = () => {
   // Send a PATCH request to update the note on the server
-  fetch(`http://127.0.0.1:5000/notes/${editedNote.id}`, {
+  fetch(`http://127.0.0.1:5000/notes/${editNote.id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ content: editedNote.content }),
+    body: JSON.stringify({ content: editNote.content }), 
   })
     .then((response) => {
       if (response.status === 200) {
-        setNotes((prevNotes) =>
-          prevNotes.map((note) =>
-            note.id === editedNote.id ? { ...note, content: editedNote.content } : note
-          )
-          );
+        // Update the editedNote state
+        setEditedNote({
+          ...editedNote,
+          title: editNote.title,
+        });
 
-          // Clear the editedNote state
-          setEditedNote({ id: null, content: '' });
-        } else {
-          // Handle errors or display a message
-          console.error('Failed to edit note:', response.statusText);
-        }
-      })
-      .catch((error) => {
-        console.error('Error editing note:', error);
-      });
-  };
-
-  const handleSubmitNewNote = () => {
-    // Make a POST request to add the new note to the server
-    fetch('http://127.0.0.1:5000/notes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newNote),
+        // Clear the editNote state
+        setEditNote(null);
+      } else {
+        // Handle errors or display a message
+        console.error('Failed to edit note:', response.statusText);
+      }
     })
-      .then((response) => response.json())
-      .then((data) => {
-        // Add the new note to the state
-        setNotes([...notes, data]);
+    .catch((error) => {
+      console.error('Error editing note:', error);
+    });
+};
 
-        // Clear the newNote state
-        setNewNote({ title: '', content: '' });
-      });
-  };
+const handleSubmitNewNote = () => {
+  // Make a POST request to add the new note to the server
+  fetch('http://127.0.0.1:5000/notes', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(newNote),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      // Clear the newNote state
+      setNewNote({ title: '', content: '' });
+
+      // Add the new note to the notes state
+      setNotes([...notes, data]);
+    })
+    .catch((error) => {
+      console.error('Error creating new note:', error);
+    });
+};
 
   return (
     <>
@@ -102,7 +105,7 @@ const handleSaveEdit = () => {
         ))}
       </div>
       {editNote && (
-        <div className="edit-form">
+        <div className="edit-container">
           <h2>Edit Note</h2>
           <input
             type="text"

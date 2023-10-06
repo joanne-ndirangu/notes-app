@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './AuthPage.css'; // Import your custom CSS
+import './AuthPage.css';
 
 function AuthPage() {
   const navigate = useNavigate();
@@ -11,7 +11,10 @@ function AuthPage() {
   };
 
   return (
+    <>
     <div className="auth-container">
+    <div>
+      <h1 >Welcome to the Notes App</h1>
       <div className="auth-form">
         <h2 className="auth-heading">{isSignUp ? 'Sign Up' : 'Log In'}</h2>
         {isSignUp ? <SignUpForm navigate={navigate} /> : <LogInForm navigate={navigate} />}
@@ -23,6 +26,8 @@ function AuthPage() {
         </p>
       </div>
     </div>
+    </div>
+    </>
   );
 }
 
@@ -54,17 +59,17 @@ function LogInForm({ navigate }) {
         if (response.ok) {
           return response.json();
         } else {
-          throw new Error('Login failed');
+          throw new Error('Invalid username or password');
         }
       })
       .then((data) => {
         console.log(data.message);
         setError(null);
+        navigate("/notes");
       })
       .catch((error) => {
         setError(error.message);
       });
-    navigate("/home");
   };
 
   return (
@@ -125,11 +130,11 @@ function SignUpForm({ navigate }) {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
+        navigate("/notes");
       })
       .catch((error) => {
         console.error('Error signing up:', error);
       });
-    navigate("/home");
   };
 
   return (
