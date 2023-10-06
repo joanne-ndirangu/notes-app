@@ -1,4 +1,5 @@
 from flask import make_response, jsonify, request, session
+from sqlalchemy import DateTime
 from setup import db, app
 from models import User, Note, Category, NoteCategory
 
@@ -18,6 +19,20 @@ def sign_up():
 
         return jsonify({"message": "New User created successfully"}), 201
 
+@app.route('/login', methods=['POST'])
+def login():
+    if request.method == 'POST':
+        login_data = request.get_json()
+        username = login_data.get('username')
+        password = login_data.get('password')
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.validatepassword(password):
+            session['user_id'] = user.id
+            return jsonify({"message": "Login successful"}), 200
+        else:
+            return jsonify({"message": "Invalid username or password"}), 401
 
 @app.route('/')
 def home():
@@ -53,7 +68,7 @@ def getuser(id):
             "id": ouruser.id,
             "email": ouruser.email,
             "username": ouruser.username,
-            # "password": ouruser.password
+            "password": ouruser.password_hash
         }
         response = make_response(jsonify(userobj), 200)
         return response
@@ -106,7 +121,7 @@ def getnote(id):
         db.session.commit()
 
         response_body = {
-            # "delete_successful": True,
+            "delete_successful": True,
             "message": "Note deleted."
         }
 
@@ -117,18 +132,30 @@ def getnote(id):
 
         return response
 
-    # if request.method == 'POST':
-    #     noteData = request.get_json()
-    #     title = noteData['title']
-    #     category = noteData['category']
-    #     content = noteData['content']
+    elif request.method == 'PATCH':
+        if ournote:
+            note_data = request.get_json()
+            if 'title' in note_data:
+                ournote.title = note_data['title']
+            if 'category' in note_data:
+                ournote.category = note_data['category']
+            if 'content' in note_data:
+                ournote.content = note_data['content']
 
-    #     new_note = User(title=title, content=content,category=category )
+            ournote.updated_at = DateTime.utcnow()
 
-    #     db.session.add(new_note)
-    #     db.session.commit()
+            db.session.commit()
 
-    #     return jsonify({"message": "New note created successfully"}), 201
+            note_dict = ournote.to_dict()
+
+            response = make_response(
+                jsonify(note_dict),
+                200
+            )
+        else:
+            response = jsonify({"error": "Note not found"}), 404
+
+        return response
 
     elif request.method == 'POST':
         title = request.form.get("title")
@@ -159,6 +186,7 @@ def getnote(id):
     return response
 
 
+
 @app.route('/categories')
 def getcategories():
 
@@ -174,6 +202,21 @@ def getcategories():
     response.headers["Content-Type"] = "application/json"
 
     return response
+
+@app.route('/categories/<int:id>')
+def getcategory(id):
+    ourcategory = Category.query.filter_by(id=id).first()
+
+    if ourcategory is None:
+        return jsonify({"error": "User not found"}), 404
+
+    if request.method == 'GET':
+        categoryobj = {
+            "id": ourcategory.id,
+            "name" : ourcategory.name,
+        }
+        response = make_response(jsonify(categoryobj), 200)
+        return response
 
 if __name__ == '__main__':
     app.run()

@@ -1,38 +1,136 @@
-.App {
+/* CSS Variables */
+:root {
+  --primary-bg-color: black;
+  --card-bg-color: #c0a3e2; /* Pastel Purple */
+  --card-text-color: #000; /* Black text */
+}
+
+/* Global Styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #000; /* Black background */
+  color: #D3A2F0; /* Pastel Purple text color */
+  margin: 0;
+  padding: 0;
+}
+
+
+/* Card Container Styles */
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Card Styles */
+.card {
+  background-color: var(--card-bg-color);
+  color: var(--card-text-color);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  width: 200px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+}
+
+/* Note Title Styles */
+.card h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+/* Note Content Styles */
+.card p {
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+/* Footer Styles */
+#footer {
+  background-color: var(--card-bg-color); /* Pastel Purple */
+  color: var(--card-text-color); /* Black text */
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 1; /* Ensure the footer appears above other content */
+}
+
+#footer a {
+  color: var(--card-text-color); /* Black text for links */
+  text-decoration: none;
+  margin: 0 20px;
+  font-size: 20px;
+  transition: color 0.3s;
+}
+
+#footer a:hover {
+  color: #fff; /* White text on hover */
+}
+
+/* Add your custom styles here */
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #6a57b0; /* Pastel purple background color */
+  color: #fff; /* White text color */
+}
+
+.auth-form {
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.auth-heading {
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.form-group {
+  margin-bottom: 20px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.auth-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #6a57b0; /* Pastel purple button color */
+  color: #fff; /* White text color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.App-link {
-  color: #61dafb;
+.auth-button:hover {
+  background-color: #4c3e8c; /* Darker pastel purple color on hover */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.auth-error {
+  color: #ff0000; /* Red error message text color */
+  margin-top: 10px;
+}
+
+.auth-switch-text {
+  margin-top: 20px;
+}
+
+.auth-switch-button {
+  background: none;
+  border: none;
+  color: #6a57b0; /* Pastel purple button color */
+  cursor: pointer;
+}
+
+.auth-switch-button:hover {
+  text-decoration: underline;
 }

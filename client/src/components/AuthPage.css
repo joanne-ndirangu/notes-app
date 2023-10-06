@@ -1,0 +1,61 @@
+/* Add your custom styles here */
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #6a57b0; /* Pastel purple background color */
+    color: #fa33d6; /* White text color */
+  }
+
+  .auth-form {
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+  }
+
+  .auth-heading {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .auth-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #6a57b0; /* Pastel purple button color */
+    color: #fff; /* White text color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .auth-button:hover {
+    background-color: #4c3e8c; /* Darker pastel purple color on hover */
+  }
+
+  .auth-error {
+    color: #ff0000; /* Red error message text color */
+    margin-top: 10px;
+  }
+
+  .auth-switch-text {
+    margin-top: 20px;
+  }
+
+  .auth-switch-button {
+    background: none;
+    border: none;
+    color: #6a57b0; /* Pastel purple button color */
+    cursor: pointer;
+  }
+
+  .auth-switch-button:hover {
+    text-decoration: underline;
+  }

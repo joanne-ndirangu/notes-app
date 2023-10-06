@@ -1,31 +1,55 @@
 import React, { useEffect, useState } from 'react';
 
 function Categories() {
-    const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [notes, setNotes] = useState([]);
 
-    useEffect(() => {
-      fetch('http://127.0.0.1:5000/categories')
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          setCategories(data);
-        })
-        .catch((error) => {
-          console.error('There was a problem with the fetch operation:', error);
-        });
-    }, []);
+  useEffect(() => {
+    // Fetch the list of categories from your API and set it in the 'categories' state.
+    fetch('http://127.0.0.1:5000/categories')
+      .then((response) => response.json())
+      .then((data) => setCategories(data))
+      .catch((error) => console.error('Error fetching categories:', error));
+  }, []);
 
-    return (
-      <div>
-        <h1>Categories</h1>
-        <ul>
-          {categories.map((category) => (
-            <li key={category.id}>{category.name}</li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
+  useEffect(() => {
+      fetch(`http://127.0.0.1:5000/notes{category.id}`)
+        .then((response) => response.json())
+        .then((data) => setNotes(data))
+        .catch((error) => console.error('Error fetching notes:', error));
+    }, [])
 
-  export default Categories;
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+  };
+
+  return (
+    <>
+    <div>
+      <h1>Categories</h1>
+      <div className="card-container"></div>
+        {categories.map((category) => (
+          <div className="card" key={category.id}>
+            <button onClick={() => handleCategoryClick(category)}>
+              {category.name}
+            </button>
+          </div>
+        ))}
+
+      {selectedCategory && (
+        <div>
+          <h2>Notes in {selectedCategory.name}</h2>
+          <ul>
+            {notes.map((note) => (
+              <li key={note.id}>{note.title}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+    </>
+  );
+}
+
+export default Categories;
