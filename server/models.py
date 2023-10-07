@@ -1,5 +1,5 @@
 from sqlalchemy.ext.hybrid import hybrid_property
-from setup import bcrypt, db
+from .setup import bcrypt, db
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -8,7 +8,7 @@ class User(db.Model):
     email = db.Column(db.String)
     username = db.Column(db.String, unique=True)
     _password_hash = db.Column(db.String, nullable=False)
-    
+
     @hybrid_property
     def password_hash(self):
         return {"message": "You can't view password hashes"}

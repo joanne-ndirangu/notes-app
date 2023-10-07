@@ -1,5 +1,5 @@
 from models import User, Note, Category, NoteCategory
-from app import app, db
+from .setup import app, db
 from faker import Faker
 
 fake = Faker()
