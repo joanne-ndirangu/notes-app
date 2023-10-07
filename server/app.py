@@ -1,5 +1,6 @@
 from flask import make_response, jsonify, request, session
-from sqlalchemy import DateTime, or_
+from sqlalchemy import or_
+from datetime import datetime
 from setup import db, app
 from models import User, Note, Category, NoteCategory
 
@@ -150,7 +151,7 @@ def getnote(id):
         if 'content' in note_data:
             ournote.content = note_data['content']
 
-        ournote.updated_at = DateTime.utcnow()
+        ournote.updated_at = datetime.utcnow()
 
         db.session.commit()
 
@@ -176,7 +177,7 @@ def getnote(id):
         ournote.title = title
         ournote.category = category
         ournote.content = content
-        ournote.updated_at = DateTime.utcnow()
+        ournote.updated_at = datetime.utcnow()
 
         db.session.commit()
 

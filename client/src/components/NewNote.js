@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function NewNote({ onNoteCreated }) {
   const [newNote, setNewNote] = useState({ title: '', content: '' });
 
   const handleSubmitNewNote = () => {
-    // Make a POST request to add the new note to the server
     fetch('http://127.0.0.1:5000/notes', {
       method: 'POST',
       headers: {
@@ -14,10 +13,7 @@ function NewNote({ onNoteCreated }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        // Clear the newNote state
         setNewNote({ title: '', content: '' });
-
-        // Add the new note to the notes state
         onNoteCreated(data);
       })
       .catch((error) => {
