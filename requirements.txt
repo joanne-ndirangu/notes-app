@@ -21,3 +21,4 @@ sqlalchemy==2.0.21
 sqlalchemy-serializer==1.4.1
 typing-extensions==4.8.0; python_version >= '3.8'
 werkzeug==3.0.0; python_version >= '3.8'
+flask-bcrypt==1.0.1
