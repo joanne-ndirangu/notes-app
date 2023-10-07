@@ -44,10 +44,6 @@ def login():
     else:
         return jsonify({"error": "Invalid username or password"}), 401
 
-@app.route('/')
-def home():
-    return 'Welcome'
-
 @app.route('/users')
 def getusers():
 
