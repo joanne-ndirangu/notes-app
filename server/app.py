@@ -1,8 +1,8 @@
 from flask import make_response, jsonify, request, session
 from sqlalchemy import or_
 from datetime import datetime
-from setup import db, app
-from models import User, Note, Category, NoteCategory
+from .setup import db, app
+from .models import User, Note, Category, NoteCategory
 
 @app.route('/signup', methods=['POST'])
 def sign_up():
