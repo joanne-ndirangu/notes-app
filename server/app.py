@@ -102,21 +102,21 @@ def getnotes():
 
     return response
 
-@app.route('/notes/<int:id>', methods = ["GET", "DELETE", "POST", "PATCH"])
+@app.route('/notes/<int:id>', methods=["GET", "DELETE", "PATCH", "POST"])
 def getnote(id):
     ournote = Note.query.filter_by(id=id).first()
 
-    # if ournote is None:
-    #     return jsonify({"error": "Note not found"}), 404
+    if ournote is None:
+        return jsonify({"error": "Note not found"}), 404
 
     if request.method == 'GET':
         noteobj = {
             "id": ournote.id,
-            "title" : ournote.title,
-            "category" : ournote.category,
-            "content" : ournote.content,
-            "created_at" : ournote.created_at,
-            "updated_at" : ournote.updated_at
+            "title": ournote.title,
+            "category": ournote.category,
+            "content": ournote.content,
+            "created_at": ournote.created_at,
+            "updated_at": ournote.updated_at
         }
         response = make_response(jsonify(noteobj), 200)
         return response
@@ -142,59 +142,52 @@ def getnote(id):
         return response
 
     elif request.method == 'PATCH':
-        if ournote:
-            note_data = request.get_json()
-            if 'title' in note_data:
-                ournote.title = note_data['title']
-            if 'category' in note_data:
-                ournote.category = note_data['category']
-            if 'content' in note_data:
-                ournote.content = note_data['content']
+        note_data = request.get_json()
+        if 'title' in note_data:
+            ournote.title = note_data['title']
+        if 'category' in note_data:
+            ournote.category = note_data['category']
+        if 'content' in note_data:
+            ournote.content = note_data['content']
 
-            ournote.updated_at = DateTime.utcnow()
+        ournote.updated_at = DateTime.utcnow()
 
-            db.session.commit()
+        db.session.commit()
 
-            note_dict = ournote.to_dict()
+        note_dict = ournote.to_dict()
 
-            response = make_response(
-                jsonify(note_dict),
-                200
-            )
-        else:
-            response = jsonify({"error": "Note not found"}), 404
+        response = make_response(
+            jsonify(note_dict),
+            200
+        )
 
         return response
+
     elif request.method == 'POST':
         note_data = request.get_json()
 
-    title = note_data.get("title")
-    category = note_data.get("category")
-    content = note_data.get("content")
+        title = note_data.get("title")
+        category = note_data.get("category")
+        content = note_data.get("content")
 
-    print("Received JSON data:")
-    print("Title:", title)
-    print("Category:", category)
-    print("Content:", content)
+        if not title or not category or not content:
+            return jsonify({"error": "Incomplete data"}), 400
 
-    new_note = Note(
-        title=title,
-        category=category,
-        content=content,
-    )
+        ournote.title = title
+        ournote.category = category
+        ournote.content = content
+        ournote.updated_at = DateTime.utcnow()
 
-    db.session.add(new_note)
-    db.session.commit()
+        db.session.commit()
 
-    note_dict = new_note.to_dict()
+        note_dict = ournote.to_dict()
 
-    response = make_response(
-        jsonify(note_dict),
-        201
-    )
+        response = make_response(
+            jsonify(note_dict),
+            200
+        )
 
-    return response
-
+        return response
 
 @app.route('/categories')
 def getcategories():
