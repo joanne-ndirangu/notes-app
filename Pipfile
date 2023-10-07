@@ -8,6 +8,10 @@ flask-migrate = "*"
 sqlalchemy = "*"
 flask-sqlalchemy = "*"
 sqlalchemy-serializer = "*"
+flask = "*"
+gunicorn = "*"
+psycopg2-binary = "*"
+flask-restful = "*"
 
 [dev-packages]
 
