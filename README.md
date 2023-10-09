@@ -1,6 +1,8 @@
 # Notes App
+A note taking app.
 
 ## Description
+An app that allows you to take down notes. They could be personal or for work. The app allows a user to create a new note, edit an old one and delete a note. Upon opening the app, the user is asked to either log in or sign up before being able to access the home page which is the notes page.
 
 ## Project Setup
 ### Requirements
@@ -22,6 +24,7 @@ git clone git@github.com:joanne-ndirangu/notes-app.git
 ``` flask run --debug ```
 5. Start the react app by running:
 ``` npm start ```
+6. Once in the react app the user will have to log into their account or create a new one. They can edit, delete and create a new note once logged in.
 
 ## Live site link
 

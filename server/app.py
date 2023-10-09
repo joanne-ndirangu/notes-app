@@ -18,7 +18,7 @@ def sign_up():
         ).first()
 
         if existing_user:
-            return jsonify({"message": "User already exists"}), 409  # HTTP 409 Conflict
+            return jsonify({"message": "User already exists"}), 409  
         else:
             new_user = User(username=username, email=email, password_hash=password)
             db.session.add(new_user)
