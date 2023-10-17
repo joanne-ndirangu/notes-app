@@ -1,8 +1,8 @@
 from flask import make_response, jsonify, request, session
 from sqlalchemy import or_
 from datetime import datetime
-from .setup import db, app
-from .models import User, Note, Category, NoteCategory
+from setup import db, app
+from models import User, Note, Category, NoteCategory
 
 @app.route('/signup', methods=['POST'])
 def sign_up():
@@ -18,7 +18,7 @@ def sign_up():
         ).first()
 
         if existing_user:
-            return jsonify({"message": "User already exists"}), 409  
+            return jsonify({"message": "User already exists"}), 409
         else:
             new_user = User(username=username, email=email, password_hash=password)
             db.session.add(new_user)
@@ -218,4 +218,4 @@ def getcategory(id):
         return response
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
